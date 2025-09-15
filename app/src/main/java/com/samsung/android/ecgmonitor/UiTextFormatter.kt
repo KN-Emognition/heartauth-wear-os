@@ -1,18 +1,25 @@
-package com.samsung.android.ecgmonitor;
+package com.samsung.android.ecgmonitor
+
+import android.content.Context
+import java.util.Locale
 
 
-import android.content.Context;
-
-import com.samsung.android.ecgmonitor.R;
-
-import java.util.Locale;
-
-public final class UiTextFormatter {
-    public static String measuringUpdate(Context ctx, long secondsLeft, double avgMv) {
-        return ctx.getString(R.string.MeasurementUpdate, secondsLeft, String.format(Locale.ENGLISH, "%.2f", avgMv));
+object UiTextFormatter {
+    @JvmStatic
+    fun measuringUpdate(ctx: Context, secondsLeft: Long, avgMv: Double): String {
+        return ctx.getString(
+            R.string.MeasurementUpdate,
+            secondsLeft,
+            String.format(Locale.ENGLISH, "%.2f", avgMv)
+        )
     }
-    public static String success(Context ctx, double avgMv) {
-        return ctx.getString(R.string.MeasurementSuccessful, String.format(Locale.ENGLISH, "%.2f", avgMv));
+
+    @JvmStatic
+    fun success(ctx: Context, avgMv: Double): String {
+        return ctx.getString(
+            R.string.MeasurementSuccessful,
+            String.format(Locale.ENGLISH, "%.2f", avgMv)
+        )
     }
 }
 

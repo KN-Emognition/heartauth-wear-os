@@ -1,3 +1,5 @@
-package com.samsung.android.ecgmonitor;
+package com.samsung.android.ecgmonitor.base.model
 
-public enum LeadStatus { CONTACT, NO_CONTACT }
+enum class LeadStatus {
+    CONTACT, NO_CONTACT
+}

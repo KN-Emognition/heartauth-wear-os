@@ -1,15 +1,15 @@
-package com.samsung.android.ecgmonitor;
+package com.samsung.android.ecgmonitor.base.model
 
 
-public final class EcgAverager {
-    private double lastAvg = 0;
+class EcgAverager {
+    private var lastAvg = 0.0
 
-    public double update(double newAvg) {
-        lastAvg = newAvg;
-        return lastAvg;
+    fun update(newAvg: Double): Double {
+        lastAvg = newAvg
+        return lastAvg
     }
 
-    public double get() {
-        return lastAvg;
+    fun get(): Double {
+        return lastAvg
     }
 }

@@ -1,30 +1,30 @@
 [
     {
-        "merged": "com.samsung.android.ecgmonitor.app-debug-16:/mipmap-xxhdpi_ic_launcher.webp.flat",
-        "source": "com.samsung.android.ecgmonitor.app-main-18:/mipmap-xxhdpi/ic_launcher.webp"
+        "merged": "com.samsung.android.ecgmonitor.app-debug-24:/layout_activity_main.xml.flat",
+        "source": "com.samsung.android.ecgmonitor.app-main-26:/layout/activity_main.xml"
     },
     {
-        "merged": "com.samsung.android.ecgmonitor.app-debug-16:/mipmap-hdpi_ic_launcher.webp.flat",
-        "source": "com.samsung.android.ecgmonitor.app-main-18:/mipmap-hdpi/ic_launcher.webp"
+        "merged": "com.samsung.android.ecgmonitor.app-debug-24:/drawable_button_background.xml.flat",
+        "source": "com.samsung.android.ecgmonitor.app-main-26:/drawable/button_background.xml"
     },
     {
-        "merged": "com.samsung.android.ecgmonitor.app-debug-16:/layout_activity_main.xml.flat",
-        "source": "com.samsung.android.ecgmonitor.app-main-18:/layout/activity_main.xml"
+        "merged": "com.samsung.android.ecgmonitor.app-debug-24:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.samsung.android.ecgmonitor.app-main-26:/mipmap-xxxhdpi/ic_launcher.webp"
     },
     {
-        "merged": "com.samsung.android.ecgmonitor.app-debug-16:/drawable_button_background.xml.flat",
-        "source": "com.samsung.android.ecgmonitor.app-main-18:/drawable/button_background.xml"
+        "merged": "com.samsung.android.ecgmonitor.app-debug-24:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.samsung.android.ecgmonitor.app-main-26:/mipmap-hdpi/ic_launcher.webp"
     },
     {
-        "merged": "com.samsung.android.ecgmonitor.app-debug-16:/mipmap-xxxhdpi_ic_launcher.webp.flat",
-        "source": "com.samsung.android.ecgmonitor.app-main-18:/mipmap-xxxhdpi/ic_launcher.webp"
+        "merged": "com.samsung.android.ecgmonitor.app-debug-24:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.samsung.android.ecgmonitor.app-main-26:/mipmap-xhdpi/ic_launcher.webp"
     },
     {
-        "merged": "com.samsung.android.ecgmonitor.app-debug-16:/mipmap-xhdpi_ic_launcher.webp.flat",
-        "source": "com.samsung.android.ecgmonitor.app-main-18:/mipmap-xhdpi/ic_launcher.webp"
+        "merged": "com.samsung.android.ecgmonitor.app-debug-24:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.samsung.android.ecgmonitor.app-main-26:/mipmap-xxhdpi/ic_launcher.webp"
     },
     {
-        "merged": "com.samsung.android.ecgmonitor.app-debug-16:/mipmap-mdpi_ic_launcher.webp.flat",
-        "source": "com.samsung.android.ecgmonitor.app-main-18:/mipmap-mdpi/ic_launcher.webp"
+        "merged": "com.samsung.android.ecgmonitor.app-debug-24:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.samsung.android.ecgmonitor.app-main-26:/mipmap-mdpi/ic_launcher.webp"
     }
 ]

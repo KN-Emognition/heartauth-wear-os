@@ -1,154 +1,193 @@
-package com.samsung.android.ecgmonitor;
+package com.samsung.android.ecgmonitor
 
-import static android.content.pm.PackageManager.PERMISSION_DENIED;
+import android.app.Activity
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
+import android.widget.Toast
+import com.samsung.android.ecgmonitor.PermissionHelper.isGranted
+import com.samsung.android.ecgmonitor.PermissionHelper.resolveHealthPermission
+import com.samsung.android.ecgmonitor.UiTextFormatter.measuringUpdate
+import com.samsung.android.ecgmonitor.UiTextFormatter.success
+import com.samsung.android.ecgmonitor.databinding.ActivityMainBinding
+import com.samsung.android.service.health.tracking.HealthTrackingService
+import com.samsung.android.service.health.tracking.data.HealthTrackerType
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.WindowManager;
-import android.widget.Toast;
+class MainActivity : Activity() {
+    private var binding: ActivityMainBinding? = null
 
-import androidx.annotation.NonNull;
+    private var healthService: HealthServiceManager? = null
+    private var ecgController: EcgMeasurementController? = null
+    private var timer: MeasurementTimer? = null
 
-import com.samsung.android.ecgmonitor.databinding.ActivityMainBinding;
+    private var permissionGranted = false
+    private var permission: String? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(
+            layoutInflater
+        )
+        setContentView(binding!!.root)
 
-public class MainActivity extends Activity {
+        permission = resolveHealthPermission(this)
+        permissionGranted = isGranted(this, permission!!)
+        if (!permissionGranted) requestPermissions(arrayOf(permission!!), 0)
 
-    private static final String APP_TAG = "ECG Monitor";
-    private static final int MEASUREMENT_DURATION = 30_000;
-    private static final int MEASUREMENT_TICK = 1_000;
-
-    private ActivityMainBinding binding;
-
-    private HealthServiceManager healthService;
-    private EcgMeasurementController ecgController;
-    private MeasurementTimer timer;
-
-    private boolean permissionGranted = false;
-    private String permission;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        permission = PermissionHelper.resolveHealthPermission(this);
-        permissionGranted = PermissionHelper.isGranted(this, permission);
-        if (!permissionGranted) requestPermissions(new String[]{permission}, 0);
-
-        healthService = new HealthServiceManager(getApplicationContext(), new HealthServiceManager.Listener() {
-            @Override public void onConnected(com.samsung.android.service.health.tracking.HealthTrackingService s) {
-                if (!healthService.isTrackerSupported(com.samsung.android.service.health.tracking.data.HealthTrackerType.ECG_ON_DEMAND)) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.NoECGSupport), Toast.LENGTH_LONG).show();
-                    finish();
+        healthService =
+            HealthServiceManager(applicationContext, object : HealthServiceManager.Listener {
+                override fun onConnected(s: HealthTrackingService?) {
+                    if (!healthService!!.isTrackerSupported(HealthTrackerType.ECG_ON_DEMAND)) {
+                        Toast.makeText(
+                            applicationContext,
+                            getString(R.string.NoECGSupport),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        finish()
+                    }
                 }
-            }
-            @Override public void onDisconnected() { }
-            @Override public void onFatalError() { finish(); }
-        });
-        healthService.connect();
 
-        ecgController = new EcgMeasurementController(healthService);
-        timer = new MeasurementTimer(MEASUREMENT_DURATION, MEASUREMENT_TICK, 2_000);
+                override fun onDisconnected() {}
+                override fun onFatalError() {
+                    finish()
+                }
+            })
+        healthService!!.connect()
 
-        binding.butStart.setOnClickListener(v -> toggleMeasurement());
+        ecgController = EcgMeasurementController(healthService!!)
+        timer = MeasurementTimer(MEASUREMENT_DURATION.toLong(), MEASUREMENT_TICK.toLong(), 2000)
 
-        binding.txtOutput.setText(R.string.outputStart);
+        binding!!.butStart.setOnClickListener { v: View? -> toggleMeasurement() }
+
+        binding!!.txtOutput.setText(R.string.outputStart)
     }
 
-    private void toggleMeasurement() {
+    private fun toggleMeasurement() {
         if (!permissionGranted) {
-            requestPermissions(new String[]{permission}, 0);
-            return;
+            requestPermissions(arrayOf(permission), 0)
+            return
         }
-        if (!healthService.isConnected()) {
-            Toast.makeText(getApplicationContext(), getString(R.string.ConnectionError), Toast.LENGTH_SHORT).show();
-            return;
+        if (!healthService!!.isConnected()) {
+            Toast.makeText(
+                applicationContext,
+                getString(R.string.ConnectionError),
+                Toast.LENGTH_SHORT
+            ).show()
+            return
         }
 
-        if (!ecgController.isRunning()) {
+        if (!ecgController!!.isRunning()) {
             // START
-            binding.txtOutput.setText(R.string.outputMeasuring);
-            binding.butStart.setText(R.string.stop);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            binding!!.txtOutput.setText(R.string.outputMeasuring)
+            binding!!.butStart.setText(R.string.stop)
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-            ecgController.start(new EcgMeasurementController.Listener() {
-                @Override public void onLeadOff() {
-                    binding.txtOutput.setText(R.string.outputWarning);
+            ecgController!!.start(object : EcgMeasurementController.Listener {
+                override fun onLeadOff() {
+                    binding!!.txtOutput.setText(R.string.outputWarning)
                 }
-                @Override public void onData(double avgMv) {
-                    long secsLeft = timer.getDurationMs() / 1000;
+
+                override fun onData(avgMv: Double) {
+                    val secsLeft = timer!!.durationMs / 1000
                 }
-                @Override public void onErrorPermission() {
-                    Toast.makeText(getApplicationContext(), getString(R.string.NoPermission), Toast.LENGTH_SHORT).show();
+
+                override fun onErrorPermission() {
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.NoPermission),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-                @Override public void onErrorPolicy() {
-                    Toast.makeText(getApplicationContext(), getString(R.string.SDKPolicyError), Toast.LENGTH_SHORT).show();
+
+                override fun onErrorPolicy() {
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.SDKPolicyError),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-                @Override public void onFinished(boolean success, double finalAvgMv) {
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+                override fun onFinished(success: Boolean, finalAvgMv: Double) {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     if (!success) {
-                        binding.txtOutput.setText(R.string.MeasurementFailed);
+                        binding!!.txtOutput.setText(R.string.MeasurementFailed)
                     } else {
-                        binding.txtOutput.setText(UiTextFormatter.success(getApplicationContext(), finalAvgMv));
+                        binding!!.txtOutput.text =
+                            success(applicationContext, finalAvgMv)
                     }
-                    binding.butStart.setText(R.string.RepeatMeasurement);
+                    binding!!.butStart.setText(R.string.RepeatMeasurement)
                 }
-            });
+            })
 
-            timer.start(new MeasurementTimer.Listener() {
-                @Override public void onTick(long millisUntilFinished) {
-                    if (ecgController.isRunning()) {
-                        if (ecgController.isLeadOff()) {
-                            binding.txtOutput.setText(R.string.outputWarning);
+            timer!!.start(object : MeasurementTimer.Listener {
+                override fun onTick(millisUntilFinished: Long) {
+                    if (ecgController!!.isRunning()) {
+                        if (ecgController!!.isLeadOff()) {
+                            binding!!.txtOutput.setText(R.string.outputWarning)
                         } else {
-                            String text = UiTextFormatter.measuringUpdate(
-                                    getApplicationContext(),
-                                    millisUntilFinished / 1000,
-                                    ecgController.getAvgMv()
-                            );
-                            binding.txtOutput.setText(text);
+                            val text = measuringUpdate(
+                                applicationContext,
+                                millisUntilFinished / 1000,
+                                ecgController!!.avgMv
+                            )
+                            binding!!.txtOutput.text = text
                         }
                     }
                 }
-                @Override public void onFinish() {
-                    ecgController.finishFromTimer();
-                }
-            });
 
+                override fun onFinish() {
+                    ecgController!!.finishFromTimer()
+                }
+            })
         } else {
             // STOP
-            ecgController.stop();
-            timer.cancel();
-            binding.butStart.setText(R.string.start);
-            binding.txtOutput.setText(R.string.outputStart);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            ecgController!!.stop()
+            timer!!.cancel()
+            binding!!.butStart.setText(R.string.start)
+            binding!!.txtOutput.setText(R.string.outputStart)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ecgController.stop();
-        timer.cancel();
-        healthService.disconnect();
+    override fun onDestroy() {
+        super.onDestroy()
+        ecgController!!.stop()
+        timer!!.cancel()
+        healthService!!.disconnect()
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        permissionGranted = true;
-        for (int i = 0; i < permissions.length; ++i) {
-            if (grantResults[i] == PERMISSION_DENIED) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        permissionGranted = true
+        for (i in permissions.indices) {
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                 if (!shouldShowRequestPermissionRationale(permissions[i])) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.PermissionDeniedPermanently), Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.PermissionDeniedPermanently),
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.PermissionDeniedRationale), Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.PermissionDeniedRationale),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
-                permissionGranted = false;
-                break;
+                permissionGranted = false
+                break
             }
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    companion object {
+        private const val APP_TAG = "ECG Monitor"
+        private const val MEASUREMENT_DURATION = 30000
+        private const val MEASUREMENT_TICK = 1000
     }
 }

@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.samsung.android.ecgmonitor.app-mergeDebugResources-14:/values-sw600dp-v13/values-sw600dp-v13.xml",
+            "outputFile": "com.samsung.android.ecgmonitor.app-mergeDebugResources-22:/values-sw600dp-v13/values-sw600dp-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\karol\\.gradle\\caches\\8.14.2\\transforms\\7143f076a21db0c99c2a6b0ddb3ffa80\\transformed\\appcompat-1.2.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "source": "C:\\Users\\karol\\.gradle\\caches\\8.14.2\\transforms\\a9490573edc335469495c7a9a08f110b\\transformed\\appcompat-1.2.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

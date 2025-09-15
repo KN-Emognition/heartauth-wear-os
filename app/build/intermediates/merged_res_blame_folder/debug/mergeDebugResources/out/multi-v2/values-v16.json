@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.samsung.android.ecgmonitor.app-mergeDebugResources-14:/values-v16/values-v16.xml",
+            "outputFile": "com.samsung.android.ecgmonitor.app-mergeDebugResources-22:/values-v16/values-v16.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\karol\\.gradle\\caches\\8.14.2\\transforms\\7143f076a21db0c99c2a6b0ddb3ffa80\\transformed\\appcompat-1.2.0\\res\\values-v16\\values-v16.xml",
+                    "source": "C:\\Users\\karol\\.gradle\\caches\\8.14.2\\transforms\\a9490573edc335469495c7a9a08f110b\\transformed\\appcompat-1.2.0\\res\\values-v16\\values-v16.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -12,24 +12,6 @@
                         "endLines": "5",
                         "endColumns": "12",
                         "endOffsets": "223"
-                    },
-                    "to": {
-                        "startLines": "3",
-                        "startColumns": "4",
-                        "startOffsets": "121",
-                        "endLines": "6",
-                        "endColumns": "12",
-                        "endOffsets": "289"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\karol\\.gradle\\caches\\8.14.2\\transforms\\db02510b90d0a70977c55ad0ce81d615\\transformed\\core-1.6.0\\res\\values-v16\\values-v16.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "65",
-                        "endOffsets": "116"
                     }
                 }
             ]
