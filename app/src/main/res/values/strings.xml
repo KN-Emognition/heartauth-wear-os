@@ -21,4 +21,12 @@
     <string name="NoPermission">Permissions Check Failed.</string>
     <string name="SDKPolicyError">SDK Policy denied.</string>
     <string name="additionalHealthDataPermission">com.samsung.android.hardware.sensormanager.permission.READ_ADDITIONAL_HEALTH_DATA</string>
+
+    <string name="btn_short_5s">Short (5s)</string>
+    <string name="btn_long_10s">Long (10s)</string>
+    <string name="back_home">Back to Home</string>
+    <string name="result_length_fmt">Duration: %1$d seconds</string>
+    <string name="waiting_for_contact_title">Waiting for contact…</string>
+    <string name="measuring_title">Measuring (%1$d s)</string>
+
 </resources>
