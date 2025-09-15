@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.samsung.android.ecgmonitor.app-mergeDebugResources-14:/values-v18/values-v18.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\karol\\.gradle\\caches\\8.14.2\\transforms\\7143f076a21db0c99c2a6b0ddb3ffa80\\transformed\\appcompat-1.2.0\\res\\values-v18\\values-v18.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "48",
+                        "endOffsets": "99"
+                    }
+                }
+            ]
+        }
+    ]
+}
