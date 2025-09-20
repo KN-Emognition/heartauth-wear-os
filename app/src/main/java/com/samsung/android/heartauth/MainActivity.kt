@@ -9,11 +9,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.samsung.android.heartauth.api.EcgSenderImpl
+import com.samsung.android.heartauth.core.EcgMeasurementController
 import com.samsung.android.heartauth.utils.PermissionHelper.isGranted
 import com.samsung.android.heartauth.utils.PermissionHelper.resolveHealthPermission
 import com.samsung.android.heartauth.ui.RootScaffold
-import com.samsung.android.heartauth.ui.RootViewModel
-import com.samsung.android.heartauth.ui.RootViewModelFactory
+import com.samsung.android.heartauth.core.RootViewModel
+import com.samsung.android.heartauth.utils.RootViewModelFactory
 import com.samsung.android.heartauth.utils.HealthServiceManager
 import com.samsung.android.service.health.tracking.HealthTrackingService
 import com.samsung.android.service.health.tracking.data.HealthTrackerType
@@ -59,12 +61,16 @@ class MainActivity : ComponentActivity() {
                 }
             }).also { it.connect() }
 
-        ecgController = EcgMeasurementController(healthService, 2_000)
 
         setContent {
             MaterialTheme {
                 val vm: RootViewModel = viewModel(
-                    factory = RootViewModelFactory(ecgController)
+                    factory = RootViewModelFactory(
+                        EcgMeasurementController(
+                            healthService,
+                            Constants.MEASUREMENT_DURATION
+                        ), EcgSenderImpl()
+                    )
                 )
                 RootScaffold(viewModel = vm)
             }

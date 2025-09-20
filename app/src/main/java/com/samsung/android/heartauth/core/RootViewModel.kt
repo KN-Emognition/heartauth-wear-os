@@ -1,14 +1,16 @@
-package com.samsung.android.heartauth.ui
+package com.samsung.android.heartauth.core
 
 import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samsung.android.heartauth.Constants
-import com.samsung.android.heartauth.EcgMeasurementController
+import com.samsung.android.heartauth.api.EcgDto
+import com.samsung.android.heartauth.api.EcgSender
 import com.samsung.android.heartauth.data.ScreenState
 import com.samsung.android.heartauth.data.UiEvent
 import com.samsung.android.heartauth.data.UiState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -16,7 +18,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class RootViewModel(
-    private val ecgController: EcgMeasurementController
+    private val ecgController: EcgMeasurementController,
+    private val ecgSender: EcgSender
 ) : ViewModel() {
 
 
@@ -28,14 +31,14 @@ class RootViewModel(
     val events = _events.receiveAsFlow()
     private var isMeasuring = false
 
+    private var graceJob: Job? = null
+
     fun startFlow() {
         viewModelScope.launch {
             _ui.update {
                 it.copy(
                     screen = ScreenState.WaitingForContact(Constants.MEASUREMENT_DURATION),
                     statusText = "",
-                    secondsLeft = ((Constants.MEASUREMENT_DURATION / 1000).toInt()),
-                    measuredValidMs = 0L
                 )
             }
             _events.send(UiEvent.KeepScreenOnEnable)
@@ -49,11 +52,12 @@ class RootViewModel(
                     val s = _ui.value.screen
                     if (s is ScreenState.WaitingForContact && !ecgController.isLeadOff()) {
                         _ui.update { it.copy(screen = ScreenState.Measuring(0f)) }
-                        isMeasuring=true
+                        isMeasuring = true
                     }
                 }
-                override fun onProgress( fraction: Float) {
-                    Log.i(Constants.HAUTH_TAG,fraction.toString())
+
+                override fun onProgress(fraction: Float) {
+                    Log.i(Constants.HAUTH_TAG, fraction.toString())
                     _ui.update { state ->
                         val s = state.screen
                         if (s is ScreenState.Measuring) {
@@ -64,9 +68,13 @@ class RootViewModel(
                     }
                 }
 
+                override fun onStableTick() {
+                    resetGraceTimer()
+                }
+
                 override fun onFinished(
                     success: Boolean,
-                    samples: List<EcgMeasurementController.Sample>,
+                    samples: List<Float>,
                     finishedReason: EcgMeasurementController.FinishReason
                 ) {
                     isMeasuring = false
@@ -80,11 +88,10 @@ class RootViewModel(
                             )
                         )
                     }
-                    Log.i("PROBKA",samples.size.toString())
+                    ecgSender.sendEcg(EcgDto(samples))
                 }
             })
 
-            runWaitingTimeout()
         }
     }
 
@@ -94,18 +101,20 @@ class RootViewModel(
         _ui.update { UiState(screen = ScreenState.Menu) }
     }
 
-    private fun runWaitingTimeout() = viewModelScope.launch {
-        val start = SystemClock.elapsedRealtime()
-        while (
-            isActive &&
-            SystemClock.elapsedRealtime() - start < Constants.ECG_LID_GRACE_PERIOD
-        ) {
-            if (_ui.value.screen !is ScreenState.WaitingForContact) return@launch
-            delay(100)
-        }
-        if (_ui.value.screen is ScreenState.WaitingForContact) {
-            stop()
-            _events.send(UiEvent.ShowToast(com.samsung.android.heartauth.R.string.result_cancel))
+    private fun resetGraceTimer() {
+        if (_ui.value.screen !is ScreenState.WaitingForContact) return
+
+        graceJob?.cancel()
+        graceJob = viewModelScope.launch {
+            val deadline = SystemClock.elapsedRealtime() + Constants.ECG_LID_GRACE_PERIOD
+            while (isActive && SystemClock.elapsedRealtime() < deadline) {
+                if (_ui.value.screen !is ScreenState.WaitingForContact) return@launch
+                delay(100)
+            }
+            if (_ui.value.screen is ScreenState.WaitingForContact) {
+                stop()
+                _events.send(UiEvent.ShowToast(com.samsung.android.heartauth.R.string.result_cancel))
+            }
         }
     }
 

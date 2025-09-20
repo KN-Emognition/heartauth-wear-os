@@ -9,8 +9,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.samsung.android.heartauth.EcgMeasurementController
+import com.samsung.android.heartauth.core.EcgMeasurementController
 import com.samsung.android.heartauth.R
+import com.samsung.android.heartauth.core.RootViewModel
 import com.samsung.android.heartauth.data.ScreenState
 import com.samsung.android.heartauth.data.UiEvent
 import com.samsung.android.heartauth.ui.screens.MainScreen

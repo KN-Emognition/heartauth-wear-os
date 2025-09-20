@@ -1,6 +1,6 @@
 package com.samsung.android.heartauth.data
 
-import com.samsung.android.heartauth.EcgMeasurementController
+import com.samsung.android.heartauth.core.EcgMeasurementController
 
 sealed class ScreenState {
     object Menu : ScreenState()
@@ -8,7 +8,7 @@ sealed class ScreenState {
     data class Measuring(val progress: Float) : ScreenState()
     data class Result(
         val success: Boolean,
-        val samples: List<EcgMeasurementController.Sample>,
+        val samples: List<Float>,
         val finishedReason: EcgMeasurementController.FinishReason
     ) : ScreenState()
 }
