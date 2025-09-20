@@ -1,4 +1,4 @@
-package com.samsung.android.ecgmonitor.base.model
+package com.samsung.android.heartauth.base.model
 
 enum class LeadStatus {
     CONTACT, NO_CONTACT

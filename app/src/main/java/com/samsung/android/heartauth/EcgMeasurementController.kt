@@ -1,4 +1,4 @@
-package com.samsung.android.ecgmonitor
+package com.samsung.android.heartauth
 
 import android.os.Handler
 import android.os.Looper

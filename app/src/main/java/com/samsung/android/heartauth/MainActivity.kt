@@ -1,7 +1,6 @@
-package com.samsung.android.ecgmonitor
+package com.samsung.android.heartauth
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.Toast
@@ -11,15 +10,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.samsung.android.ecgmonitor.PermissionHelper.isGranted
-import com.samsung.android.ecgmonitor.PermissionHelper.resolveHealthPermission
+import com.samsung.android.heartauth.PermissionHelper.isGranted
+import com.samsung.android.heartauth.PermissionHelper.resolveHealthPermission
+import com.samsung.android.heartauth.ui.MainScreen
+import com.samsung.android.heartauth.ui.MeasurementScreen
+import com.samsung.android.heartauth.ui.ResultScreen
 import com.samsung.android.service.health.tracking.HealthTrackingService
 import com.samsung.android.service.health.tracking.data.HealthTrackerType
 import kotlinx.coroutines.delay
@@ -45,7 +43,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // permissions
         val neededPermission = resolveHealthPermission(this)
         val permissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -55,7 +52,6 @@ class MainActivity : ComponentActivity() {
             }
         }
         if (!isGranted(this, neededPermission)) {
-            // just request the resolved permission string
             permissionLauncher.launch(
                 if (neededPermission == getString(R.string.additionalHealthDataPermission))
                     neededPermission
@@ -64,7 +60,6 @@ class MainActivity : ComponentActivity() {
             )
         }
 
-        // health service / controller
         healthService = HealthServiceManager(applicationContext, object : HealthServiceManager.Listener {
             override fun onConnected(service: HealthTrackingService?) {
                 if (!healthService.isTrackerSupported(HealthTrackerType.ECG_ON_DEMAND)) {
@@ -82,7 +77,6 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
                 AppContent(
                     startFlow = { durationMs -> startFlow(durationMs) },
-                    stopAll = { stopMeasurementInternal() }
                 )
             }
         }
@@ -155,9 +149,8 @@ class MainActivity : ComponentActivity() {
         screenState = ScreenState.Menu
     }
 
-    // -------------------- COMPOSE UI --------------------
     @Composable
-    private fun AppContent(startFlow: (Long) -> Unit, stopAll: () -> Unit) {
+    private fun AppContent(startFlow: (Long) -> Unit) {
         val ctx = LocalContext.current
 
         // WAITING-FOR-CONTACT timeout
@@ -174,8 +167,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        // COUNTDOWN once measuring begins (ignore first 2s for display)
         LaunchedEffect(screenState) {
             if (screenState is ScreenState.Measuring) {
                 val total = (screenState as ScreenState.Measuring).durationMs
@@ -213,89 +204,28 @@ class MainActivity : ComponentActivity() {
 
         Surface(Modifier.fillMaxSize()) {
             when (val s = screenState) {
-                is ScreenState.Menu -> MenuScreen(
-                    onShort = { startFlow(5_000L) },
-                    onLong = { startFlow(10_000L) }
+                is ScreenState.Menu -> MainScreen(
+                    onMeasure = { startFlow(5_000L) },
                 )
-                is ScreenState.WaitingForContact -> MeasuringScreen(
+                is ScreenState.WaitingForContact -> MeasurementScreen(
                     title = getString(R.string.waiting_for_contact_title),
                     status = statusText,
-                    showStop = true,
-                    onStop = { stopAll() }
                 )
-                is ScreenState.Measuring -> MeasuringScreen(
+                is ScreenState.Measuring -> MeasurementScreen(
                     title = getString(R.string.measuring_title, (s.durationMs / 1000)),
                     status = statusText,
-                    showStop = true,
-                    onStop = { stopAll() }
                 )
                 is ScreenState.Result -> ResultScreen(
-                    // inline success text; no UiTextFormatter
-                    avgText = stringResource(
+                    message = stringResource(
                         R.string.MeasurementSuccessful,
                         String.format(Locale.ENGLISH, "%.2f", s.avgMv)
                     ),
-                    detail = getString(R.string.result_length_fmt, (s.durationMs / 1000)),
                     onBackHome = { screenState = ScreenState.Menu }
                 )
             }
         }
     }
 
-    @Composable
-    private fun MenuScreen(onShort: () -> Unit, onLong: () -> Unit) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = getString(R.string.app_name), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.height(24.dp))
-            Button(onClick = onShort, modifier = Modifier.fillMaxWidth()) {
-                Text(text = getString(R.string.btn_short_5s))
-            }
-            Spacer(Modifier.height(12.dp))
-            Button(onClick = onLong, modifier = Modifier.fillMaxWidth()) {
-                Text(text = getString(R.string.btn_long_10s))
-            }
-        }
-    }
 
-    @Composable
-    private fun MeasuringScreen(title: String, status: String, showStop: Boolean, onStop: () -> Unit) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(title, fontSize = 20.sp, fontWeight = FontWeight.Medium)
-            Spacer(Modifier.height(16.dp))
-            Text(status, fontSize = 18.sp)
-            if (showStop) {
-                Spacer(Modifier.height(24.dp))
-                OutlinedButton(onClick = onStop) { Text(getString(R.string.stop)) }
-            }
-        }
-    }
 
-    @Composable
-    private fun ResultScreen(avgText: String, detail: String, onBackHome: () -> Unit) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = avgText, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(8.dp))
-            Text(text = detail)
-            Spacer(Modifier.height(24.dp))
-            Button(onClick = onBackHome) { Text(getString(R.string.back_home)) }
-        }
-    }
 }

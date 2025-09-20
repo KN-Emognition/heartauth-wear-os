@@ -1,4 +1,4 @@
-package com.samsung.android.ecgmonitor
+package com.samsung.android.heartauth
 
 import android.content.Context
 import android.util.Log
@@ -50,7 +50,6 @@ class HealthServiceManager(appContext: Context, private val listener: Listener) 
                 ).show()
             }
             if (e.hasResolution()) {
-                // upstream Activity must call e.resolve(activity)
                 Log.w(TAG, "Connection failed; resolution required: " + e.message)
             } else {
                 Log.e(TAG, "Could not connect: " + e.message)
@@ -88,13 +87,11 @@ class HealthServiceManager(appContext: Context, private val listener: Listener) 
         return connected.get()
     }
 
-    /** Throws if not connected.  */
     fun getTracker(type: HealthTrackerType?): HealthTracker {
         checkNotNull(service) { "Service not connected" }
         return service!!.getHealthTracker(type)
     }
 
-    /** Check device capability for a tracker type.  */
     fun isTrackerSupported(type: HealthTrackerType): Boolean {
         if (service == null) return false
         val types = service!!.trackingCapability.supportHealthTrackerTypes
