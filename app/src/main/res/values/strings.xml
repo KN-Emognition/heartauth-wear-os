@@ -28,5 +28,8 @@
     <string name="result_length_fmt">Duration: %1$d seconds</string>
     <string name="waiting_for_contact_title">Waiting for contact…</string>
     <string name="measuring_title">Measuring (%1$d s)</string>
+    <string name="MeasurementEndedLeadOff">lead off finish</string>
+    <string name="MeasurementCancelled">cancelled finish</string>
+    <string name="measuring_time_left">%1$d s left…</string>
 
 </resources>
