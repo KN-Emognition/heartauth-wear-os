@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                 }
             }).also { it.connect() }
 
-        ecgController = EcgMeasurementController(healthService)
+        ecgController = EcgMeasurementController(healthService, 2_000)
 
         setContent {
             MaterialTheme {

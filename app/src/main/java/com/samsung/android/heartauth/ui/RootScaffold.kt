@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.samsung.android.heartauth.EcgMeasurementController
 import com.samsung.android.heartauth.R
 import com.samsung.android.heartauth.data.ScreenState
+import com.samsung.android.heartauth.data.UiEvent
 import com.samsung.android.heartauth.ui.screens.MainScreen
 import com.samsung.android.heartauth.ui.screens.MeasurementScreen
 import com.samsung.android.heartauth.ui.screens.ResultScreen
@@ -20,7 +21,6 @@ import com.samsung.android.heartauth.ui.screens.ResultScreen
 @Composable
 fun RootScaffold(
     viewModel: RootViewModel,
-    startDurationMs: Long = 5_000L
 ) {
     val ctx = LocalContext.current
     val ui by viewModel.ui.collectAsStateWithLifecycle()
@@ -28,12 +28,12 @@ fun RootScaffold(
     LaunchedEffect(Unit) {
         viewModel.events.collect { ev ->
             when (ev) {
-                is RootViewModel.UiEvent.ShowToast ->
+                is UiEvent.ShowToast ->
                     Toast.makeText(ctx, ctx.getString(ev.messageRes), Toast.LENGTH_SHORT).show()
-                RootViewModel.UiEvent.KeepScreenOnEnable -> {
+                UiEvent.KeepScreenOnEnable -> {
                     (ctx as? Activity)?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 }
-                RootViewModel.UiEvent.KeepScreenOnDisable -> {
+                UiEvent.KeepScreenOnDisable -> {
                     (ctx as? Activity)?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 }
             }
@@ -51,7 +51,7 @@ fun RootScaffold(
     Surface(Modifier.fillMaxSize()) {
         when (val s = ui.screen) {
             is ScreenState.Menu -> MainScreen(
-                onMeasure = { viewModel.startFlow(startDurationMs) },
+                onMeasure = { viewModel.startFlow() },
             )
 
             is ScreenState.WaitingForContact -> MeasurementScreen(

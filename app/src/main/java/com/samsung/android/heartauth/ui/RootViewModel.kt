@@ -1,10 +1,13 @@
 package com.samsung.android.heartauth.ui
 
+import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.samsung.android.heartauth.Constants
 import com.samsung.android.heartauth.EcgMeasurementController
 import com.samsung.android.heartauth.data.ScreenState
+import com.samsung.android.heartauth.data.UiEvent
 import com.samsung.android.heartauth.data.UiState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -20,25 +23,19 @@ class RootViewModel(
     private val _ui = MutableStateFlow(UiState())
     val ui: StateFlow<UiState> = _ui.asStateFlow()
 
-    sealed interface UiEvent {
-        data class ShowToast(val messageRes: Int) : UiEvent
-        data object KeepScreenOnEnable : UiEvent
-        data object KeepScreenOnDisable : UiEvent
-    }
+    private val MEASUREMENT_DURATION= 2000
 
     private val _events = Channel<UiEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
+    private var isMeasuring = false
 
-    private val waitingTimeoutMs = 2_000L
-    private val tickMs = 100L
-
-    fun startFlow(durationMs: Long) {
+    fun startFlow() {
         viewModelScope.launch {
             _ui.update {
                 it.copy(
-                    screen = ScreenState.WaitingForContact(durationMs),
+                    screen = ScreenState.WaitingForContact(MEASUREMENT_DURATION.toLong()),
                     statusText = "",
-                    secondsLeft = (durationMs / 1000).toInt(),
+                    secondsLeft = (MEASUREMENT_DURATION / 1000),
                     measuredValidMs = 0L
                 )
             }
@@ -53,7 +50,7 @@ class RootViewModel(
                     val s = _ui.value.screen
                     if (s is ScreenState.WaitingForContact && !ecgController.isLeadOff()) {
                         _ui.update { it.copy(screen = ScreenState.Measuring(s.durationMs)) }
-                        runMeasuringLoop()
+                        isMeasuring=true
                     }
                 }
 
@@ -62,14 +59,18 @@ class RootViewModel(
                     samples: List<EcgMeasurementController.Sample>,
                     finishedReason: EcgMeasurementController.FinishReason
                 ) {
+                    isMeasuring = false
                     _events.trySend(UiEvent.KeepScreenOnDisable)
                     _ui.update {
                         it.copy(
-                            screen = ScreenState.Result(success, samples, finishedReason)
+                            screen = ScreenState.Result(
+                                success,
+                                samples,
+                                finishedReason
+                            )
                         )
                     }
-                    Log.i("ESSA PROBKI",samples.size.toString())
-
+                    Log.i("ESSA PROBKA",samples.size.toString())
                 }
             })
 
@@ -84,44 +85,17 @@ class RootViewModel(
     }
 
     private fun runWaitingTimeout() = viewModelScope.launch {
-        val start = System.currentTimeMillis()
-        while (isActive && System.currentTimeMillis() - start < waitingTimeoutMs) {
+        val start = SystemClock.elapsedRealtime()
+        while (
+            isActive &&
+            SystemClock.elapsedRealtime() - start < Constants.ECG_LID_GRACE_PERIOD
+        ) {
             if (_ui.value.screen !is ScreenState.WaitingForContact) return@launch
             delay(100)
         }
         if (_ui.value.screen is ScreenState.WaitingForContact) {
             stop()
             _events.send(UiEvent.ShowToast(com.samsung.android.heartauth.R.string.outputWarning))
-        }
-    }
-
-    private fun runMeasuringLoop() = viewModelScope.launch {
-        val total = (_ui.value.screen as? ScreenState.Measuring)?.durationMs ?: return@launch
-
-        while (isActive && _ui.value.screen is ScreenState.Measuring) {
-            val canAccumulate = ecgController.isArmed() && !ecgController.isLeadOff()
-            if (canAccumulate) {
-                _ui.update { st ->
-                    val new = (st.measuredValidMs + tickMs).coerceAtMost(total)
-                    st.copy(
-                        measuredValidMs = new,
-                        secondsLeft = ((total - new) / 1000).toInt()
-                    )
-                }
-            } else {
-                _ui.update { st ->
-                    st.copy(
-                        secondsLeft = (((total - st.measuredValidMs).coerceAtLeast(0L)) / 1000).toInt()
-                    )
-                }
-            }
-
-            if (_ui.value.measuredValidMs >= total) break
-            delay(tickMs)
-        }
-
-        if (_ui.value.screen is ScreenState.Measuring) {
-            ecgController.finishFromTimer()
         }
     }
 

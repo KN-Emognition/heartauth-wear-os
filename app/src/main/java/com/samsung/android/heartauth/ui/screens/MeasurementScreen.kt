@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun MeasurementScreen(title: String, status: String) {
+fun MeasurementScreen(title: String, status: String, duration: Long) {
     Column(
         modifier = Modifier
             .fillMaxSize()
