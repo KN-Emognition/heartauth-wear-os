@@ -1,30 +1,34 @@
 package com.samsung.android.heartauth.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.samsung.android.heartauth.R
+import com.samsung.android.heartauth.ui.components.GradientCircularProgressIndicator
 
 @Composable
-fun MeasurementScreen(title: String, status: String, duration: Long) {
-    Column(
+fun MeasurementScreen(progress: Float) {
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(12.dp), contentAlignment = Alignment.Center
     ) {
-        Text(title, fontSize = 20.sp, fontWeight = FontWeight.Medium)
-        Spacer(Modifier.height(16.dp))
-        Text(status, fontSize = 18.sp)
+        Image(
+            painter = painterResource(R.drawable.intro2),
+            contentDescription = null,
+            modifier = Modifier.size(120.dp)
+        )
+
+        GradientCircularProgressIndicator(
+            progress = progress , modifier = Modifier.size(120.dp)
+        )
     }
 }

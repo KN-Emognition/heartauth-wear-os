@@ -23,7 +23,6 @@ class RootViewModel(
     private val _ui = MutableStateFlow(UiState())
     val ui: StateFlow<UiState> = _ui.asStateFlow()
 
-    private val MEASUREMENT_DURATION= 2000
 
     private val _events = Channel<UiEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
@@ -33,9 +32,9 @@ class RootViewModel(
         viewModelScope.launch {
             _ui.update {
                 it.copy(
-                    screen = ScreenState.WaitingForContact(MEASUREMENT_DURATION.toLong()),
+                    screen = ScreenState.WaitingForContact(Constants.MEASUREMENT_DURATION),
                     statusText = "",
-                    secondsLeft = (MEASUREMENT_DURATION / 1000),
+                    secondsLeft = ((Constants.MEASUREMENT_DURATION / 1000).toInt()),
                     measuredValidMs = 0L
                 )
             }
@@ -49,8 +48,19 @@ class RootViewModel(
                 override fun onData() {
                     val s = _ui.value.screen
                     if (s is ScreenState.WaitingForContact && !ecgController.isLeadOff()) {
-                        _ui.update { it.copy(screen = ScreenState.Measuring(s.durationMs)) }
+                        _ui.update { it.copy(screen = ScreenState.Measuring(0f)) }
                         isMeasuring=true
+                    }
+                }
+                override fun onProgress( fraction: Float) {
+                    Log.i(Constants.HAUTH_TAG,fraction.toString())
+                    _ui.update { state ->
+                        val s = state.screen
+                        if (s is ScreenState.Measuring) {
+                            state.copy(
+                                progress = fraction,
+                            )
+                        } else state
                     }
                 }
 
@@ -70,7 +80,7 @@ class RootViewModel(
                             )
                         )
                     }
-                    Log.i("ESSA PROBKA",samples.size.toString())
+                    Log.i("PROBKA",samples.size.toString())
                 }
             })
 
@@ -95,7 +105,7 @@ class RootViewModel(
         }
         if (_ui.value.screen is ScreenState.WaitingForContact) {
             stop()
-            _events.send(UiEvent.ShowToast(com.samsung.android.heartauth.R.string.outputWarning))
+            _events.send(UiEvent.ShowToast(com.samsung.android.heartauth.R.string.result_cancel))
         }
     }
 

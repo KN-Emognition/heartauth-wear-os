@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.MainThread
+import com.samsung.android.heartauth.utils.HealthServiceManager
 import com.samsung.android.service.health.tracking.HealthTracker
 import com.samsung.android.service.health.tracking.HealthTracker.TrackerEventListener
 import com.samsung.android.service.health.tracking.data.DataPoint
@@ -21,6 +22,7 @@ class EcgMeasurementController(private val serviceManager: HealthServiceManager,
     interface Listener {
         fun onLeadOff()
         fun onData()
+        fun onProgress(fraction: Float)
         fun onFinished(success: Boolean, samples: List<Sample>, finishedReason: FinishReason)
     }
 
@@ -108,6 +110,9 @@ class EcgMeasurementController(private val serviceManager: HealthServiceManager,
                 samples.add(Sample(now, mv, false))
             }
             onLeadCount += toAdd
+
+            val fraction = samples.size.toFloat()/ targetSamples.toFloat()
+            main.post { listener?.onProgress(fraction) }
 
             if (onLeadCount >= targetSamples) {
                 finishInternal(success = true, reason = FinishReason.TIMER)

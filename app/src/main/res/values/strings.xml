@@ -1,17 +1,6 @@
 <resources>
     <string name="app_name">ECG Monitor</string>
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    -->
-    <string name="start">Start</string>
-    <string name="stop">Stop</string>
-    <string name="outputStart">Press Start and put your index finger on watch Home button.</string>
-    <string name="outputMeasuring">Measuring…</string>
-    <string name="outputWarning">Wear your watch tightly on and keep index finger on Home button.</string>
-    <string name="MeasurementFailed">Measurement failed. Keep your watch tightly on and index finger on Home button.</string>
-    <string name="MeasurementSuccessful">Measurement finished.\nECG: %s mV</string>
-    <string name="MeasurementUpdate">"Measuring. Remaining time: %d seconds.\nCurrent ECG: %s mV"</string>
-    <string name="RepeatMeasurement">Measure again</string>
+
     <string name="PermissionDeniedPermanently">Permissions denied. Grant permissions in watch settings and start application again.</string>
     <string name="PermissionDeniedRationale">User permission is required to make ECG Measurement.</string>
     <string name="NoHealthPlatformError">Health Platform version is outdated or not installed.</string>
@@ -22,14 +11,10 @@
     <string name="SDKPolicyError">SDK Policy denied.</string>
     <string name="additionalHealthDataPermission">com.samsung.android.hardware.sensormanager.permission.READ_ADDITIONAL_HEALTH_DATA</string>
 
-    <string name="btn_short_5s">Short (5s)</string>
-    <string name="btn_long_10s">Long (10s)</string>
+    <string name="go_measure">Start measuring!</string>
     <string name="back_home">Back to Home</string>
-    <string name="result_length_fmt">Duration: %1$d seconds</string>
-    <string name="waiting_for_contact_title">Waiting for contact…</string>
-    <string name="measuring_title">Measuring (%1$d s)</string>
-    <string name="MeasurementEndedLeadOff">lead off finish</string>
-    <string name="MeasurementCancelled">cancelled finish</string>
-    <string name="measuring_time_left">%1$d s left…</string>
+    <string name="result_success">Successful reading!</string>
+    <string name="result_interrupt">Keep your finger on the lid!</string>
+    <string name="result_cancel">Keep your finger on the lid to start!</string>
 
 </resources>

@@ -1,9 +1,10 @@
-package com.samsung.android.heartauth
+package com.samsung.android.heartauth.utils
 
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.MainThread
+import com.samsung.android.heartauth.R
 import com.samsung.android.service.health.tracking.ConnectionListener
 import com.samsung.android.service.health.tracking.HealthTracker
 import com.samsung.android.service.health.tracking.HealthTrackerException

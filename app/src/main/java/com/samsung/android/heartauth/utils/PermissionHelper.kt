@@ -1,10 +1,11 @@
-package com.samsung.android.heartauth
+package com.samsung.android.heartauth.utils
 
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
+import com.samsung.android.heartauth.R
 
 
 object PermissionHelper {

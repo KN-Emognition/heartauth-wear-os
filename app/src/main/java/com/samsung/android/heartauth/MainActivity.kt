@@ -9,11 +9,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.*
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.samsung.android.heartauth.PermissionHelper.isGranted
-import com.samsung.android.heartauth.PermissionHelper.resolveHealthPermission
+import com.samsung.android.heartauth.utils.PermissionHelper.isGranted
+import com.samsung.android.heartauth.utils.PermissionHelper.resolveHealthPermission
 import com.samsung.android.heartauth.ui.RootScaffold
 import com.samsung.android.heartauth.ui.RootViewModel
 import com.samsung.android.heartauth.ui.RootViewModelFactory
+import com.samsung.android.heartauth.utils.HealthServiceManager
 import com.samsung.android.service.health.tracking.HealthTrackingService
 import com.samsung.android.service.health.tracking.data.HealthTrackerType
 
