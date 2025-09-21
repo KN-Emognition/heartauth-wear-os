@@ -1,0 +1,19 @@
+openapi: 3.0.3
+info:
+  title: ECG Payload components
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    EcgPayload:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            type: number
+            format: float
+
+

@@ -5,6 +5,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.annotation.MainThread
 import com.samsung.android.heartauth.Constants
+import com.samsung.android.heartauth.data.FinishReason
 import com.samsung.android.heartauth.utils.HealthServiceManager
 import com.samsung.android.service.health.tracking.HealthTracker
 import com.samsung.android.service.health.tracking.HealthTracker.TrackerEventListener
@@ -17,15 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class EcgMeasurementController(private val serviceManager: HealthServiceManager, duration: Long) {
 
-    enum class FinishReason { TIMER, LEAD_OFF, CANCELLED }
-
-    interface Listener {
-        fun onLeadOff()
-        fun onData()
-        fun onStableTick()
-        fun onProgress(fraction: Float)
-        fun onFinished(success: Boolean, samples: List<Float>, finishedReason: FinishReason)
-    }
 
     private val targetSamples: Int =
         ((duration * Constants.ECG_SIGNAL_FREQ) / 1000L).toInt().coerceAtLeast(1)
@@ -80,10 +72,10 @@ class EcgMeasurementController(private val serviceManager: HealthServiceManager,
             val isOff = (lo == Constants.WATCH_NO_CONTACT_CODE)
 
             if (isOff) {
-                if(isMeasuring){
+                if (isMeasuring) {
                     val needed = targetSamples - onLeadCount
                     if (needed <= 0) {
-                        finishInternal(success = true, reason = FinishReason.TIMER)
+                        finishInternal(success = true, reason = FinishReason.SUCCESS)
                         return
                     }
                     val toAdd = minOf(needed, list.size)
@@ -91,14 +83,12 @@ class EcgMeasurementController(private val serviceManager: HealthServiceManager,
                         val mv = list[i].getValue(ValueKey.EcgSet.ECG_MV)
                         samples.add(mv)
                     }
-                    Log.w(Constants.HAUTH_TAG, "ADDED ${toAdd}")
                     onLeadCount += toAdd
 
                 }
                 offStableCount++
                 contactStableCount = 0
                 leadOff.set(true)
-                main.post { listener?.onLeadOff() }
                 if (isMeasuring && offStableCount >= Constants.ECG_LID_DEBOUNCE_TICKS) {
                     finishInternal(success = false, reason = FinishReason.LEAD_OFF)
                 }
@@ -120,7 +110,7 @@ class EcgMeasurementController(private val serviceManager: HealthServiceManager,
 
             val needed = targetSamples - onLeadCount
             if (needed <= 0) {
-                finishInternal(success = true, reason = FinishReason.TIMER)
+                finishInternal(success = true, reason = FinishReason.SUCCESS)
                 return
             }
             val toAdd = minOf(needed, list.size)
@@ -134,7 +124,7 @@ class EcgMeasurementController(private val serviceManager: HealthServiceManager,
             main.post { listener?.onProgress(fraction) }
 
             if (onLeadCount >= targetSamples) {
-                finishInternal(success = true, reason = FinishReason.TIMER)
+                finishInternal(success = true, reason = FinishReason.SUCCESS)
                 return
             }
         }
@@ -148,7 +138,7 @@ class EcgMeasurementController(private val serviceManager: HealthServiceManager,
 
     @MainThread
     fun stop() {
-        if (running.get()) finishInternal(success = false, reason = FinishReason.CANCELLED)
+        if (running.get()) finishInternal(success = false, reason = FinishReason.TIMEOUT)
     }
 
     @MainThread

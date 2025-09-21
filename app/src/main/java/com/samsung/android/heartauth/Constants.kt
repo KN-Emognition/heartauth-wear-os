@@ -10,5 +10,6 @@ class Constants {
         const val HAUTH_TAG = "HeartAuth-Ecg-Collector"
         const val ECG_LID_DEBOUNCE_TICKS = 2
         const val ECG_LID_STARTING_TICKS=200
+
     }
 }

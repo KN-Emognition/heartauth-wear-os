@@ -5,11 +5,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samsung.android.heartauth.Constants
-import com.samsung.android.heartauth.api.EcgDto
 import com.samsung.android.heartauth.api.EcgSender
+import com.samsung.android.heartauth.data.FinishReason
 import com.samsung.android.heartauth.data.ScreenState
 import com.samsung.android.heartauth.data.UiEvent
 import com.samsung.android.heartauth.data.UiState
+import com.samsung.android.heartauth.data.models.EcgPayload
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -29,8 +30,8 @@ class RootViewModel(
 
     private val _events = Channel<UiEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
-    private var isMeasuring = false
 
+    private var isMeasuring = false
     private var graceJob: Job? = null
 
     fun startFlow() {
@@ -43,11 +44,7 @@ class RootViewModel(
             }
             _events.send(UiEvent.KeepScreenOnEnable)
 
-            ecgController.start(object : EcgMeasurementController.Listener {
-                override fun onLeadOff() {
-                    _ui.update { it.copy(statusText = "lead_off") }
-                }
-
+            ecgController.start(object : Listener {
                 override fun onData() {
                     val s = _ui.value.screen
                     if (s is ScreenState.WaitingForContact && !ecgController.isLeadOff()) {
@@ -75,7 +72,7 @@ class RootViewModel(
                 override fun onFinished(
                     success: Boolean,
                     samples: List<Float>,
-                    finishedReason: EcgMeasurementController.FinishReason
+                    finishedReason: FinishReason
                 ) {
                     isMeasuring = false
                     _events.trySend(UiEvent.KeepScreenOnDisable)
@@ -88,7 +85,7 @@ class RootViewModel(
                             )
                         )
                     }
-                    ecgSender.sendEcg(EcgDto(samples))
+                    ecgSender.sendEcg(EcgPayload(samples))
                 }
             })
 

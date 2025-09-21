@@ -9,8 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.samsung.android.heartauth.core.EcgMeasurementController
 import com.samsung.android.heartauth.R
+import com.samsung.android.heartauth.data.FinishReason
 import com.samsung.android.heartauth.core.RootViewModel
 import com.samsung.android.heartauth.data.ScreenState
 import com.samsung.android.heartauth.data.UiEvent
@@ -55,13 +55,13 @@ fun RootScaffold(
 
             is ScreenState.Result -> {
                 val resultText = when (s.finishedReason) {
-                    EcgMeasurementController.FinishReason.LEAD_OFF ->
+                    FinishReason.LEAD_OFF ->
                         ctx.getString(R.string.result_interrupt)
 
-                    EcgMeasurementController.FinishReason.TIMER ->
+                    FinishReason.SUCCESS ->
                         ctx.getString(R.string.result_success)
 
-                    EcgMeasurementController.FinishReason.CANCELLED ->
+                    FinishReason.TIMEOUT ->
                         ctx.getString(R.string.result_cancel)
                 }
                 ResultScreen(message = resultText, onBackHome = { viewModel.stop() })
