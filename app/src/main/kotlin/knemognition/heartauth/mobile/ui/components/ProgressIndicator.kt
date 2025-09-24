@@ -1,4 +1,4 @@
-package com.samsung.android.heartauth.ui.components
+package knemognition.heartauth.mobile.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable

@@ -1,10 +1,10 @@
-package com.samsung.android.heartauth.utils
+package knemognition.heartauth.mobile.utils
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.samsung.android.heartauth.api.EcgSender
-import com.samsung.android.heartauth.core.EcgMeasurementController
-import com.samsung.android.heartauth.core.RootViewModel
+import knemognition.heartauth.mobile.api.EcgSender
+import knemognition.heartauth.mobile.core.EcgMeasurementController
+import knemognition.heartauth.mobile.core.RootViewModel
 
 class RootViewModelFactory(
     private val controller: EcgMeasurementController,

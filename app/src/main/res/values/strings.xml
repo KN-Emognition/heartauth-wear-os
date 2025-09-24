@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ECG Monitor</string>
+    <string name="app_name">Heartauth ECG</string>
 
     <string name="PermissionDeniedPermanently">Permissions denied. Grant permissions in watch settings and start application again.</string>
     <string name="PermissionDeniedRationale">User permission is required to make ECG Measurement.</string>
@@ -16,5 +16,5 @@
     <string name="result_success">Successful reading!</string>
     <string name="result_interrupt">Keep your finger on the lid!</string>
     <string name="result_cancel">Keep your finger on the lid to start!</string>
-
+    <string name="measurement_done">Success!</string>
 </resources>

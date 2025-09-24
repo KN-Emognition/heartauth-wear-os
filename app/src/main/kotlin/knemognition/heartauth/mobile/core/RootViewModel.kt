@@ -1,16 +1,16 @@
-package com.samsung.android.heartauth.core
+package knemognition.heartauth.mobile.core
 
 import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.samsung.android.heartauth.Constants
-import com.samsung.android.heartauth.api.EcgSender
-import com.samsung.android.heartauth.data.FinishReason
-import com.samsung.android.heartauth.data.ScreenState
-import com.samsung.android.heartauth.data.UiEvent
 import com.samsung.android.heartauth.data.UiState
-import com.samsung.android.heartauth.data.models.EcgPayload
+import knemognition.heartauth.mobile.Constants
+import knemognition.heartauth.mobile.data.EcgData
+import knemognition.heartauth.mobile.api.EcgSender
+import knemognition.heartauth.mobile.data.FinishReason
+import knemognition.heartauth.mobile.data.ScreenState
+import knemognition.heartauth.mobile.data.UiEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -38,7 +38,7 @@ class RootViewModel(
         viewModelScope.launch {
             _ui.update {
                 it.copy(
-                    screen = ScreenState.WaitingForContact(Constants.MEASUREMENT_DURATION),
+                    screen = ScreenState.WaitingForContact,
                     statusText = "",
                 )
             }
@@ -56,10 +56,10 @@ class RootViewModel(
                 override fun onProgress(fraction: Float) {
                     Log.i(Constants.HAUTH_TAG, fraction.toString())
                     _ui.update { state ->
-                        val s = state.screen
-                        if (s is ScreenState.Measuring) {
+                        if (state.screen is ScreenState.Measuring) {
                             state.copy(
-                                progress = fraction,
+                                screen = ScreenState.Measuring(fraction),
+                                progress = fraction
                             )
                         } else state
                     }
@@ -76,17 +76,23 @@ class RootViewModel(
                 ) {
                     isMeasuring = false
                     _events.trySend(UiEvent.KeepScreenOnDisable)
+
+                    if (finishedReason == FinishReason.SUCCESS) {
+                        ecgSender.sendEcg(EcgData(samples))
+                        _events.trySend(UiEvent.ShowToast(com.samsung.android.heartauth.R.string.result_success))
+                        _events.trySend(UiEvent.CloseAfterDelay(2000))
+                    }
+
                     _ui.update {
                         it.copy(
                             screen = ScreenState.Result(
-                                success,
-                                samples,
-                                finishedReason
+                                success = success,
+                                finishedReason = finishedReason
                             )
                         )
                     }
-                    ecgSender.sendEcg(EcgPayload(samples))
                 }
+
             })
 
         }
@@ -113,6 +119,10 @@ class RootViewModel(
                 _events.send(UiEvent.ShowToast(com.samsung.android.heartauth.R.string.result_cancel))
             }
         }
+    }
+
+    fun goToMenu() {
+        _ui.update { it.copy(screen = ScreenState.Menu) }
     }
 
     override fun onCleared() {

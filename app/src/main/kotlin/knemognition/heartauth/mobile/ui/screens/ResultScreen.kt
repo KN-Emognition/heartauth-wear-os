@@ -1,12 +1,7 @@
-package com.samsung.android.heartauth.ui.screens
+package knemognition.heartauth.mobile.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +16,10 @@ import androidx.compose.ui.unit.sp
 import com.samsung.android.heartauth.R
 
 @Composable
-fun MainScreen(onMeasure: () -> Unit) {
+fun ResultScreen(
+    message: String,
+    onBackHome: (() -> Unit)? = null,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -29,22 +27,23 @@ fun MainScreen(onMeasure: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(
-            text = stringResource(R.string.app_name),
-            fontSize = 18.sp,
+            text = message,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
-        Spacer(Modifier.size(12.dp))
-        OutlinedButton(onClick = onMeasure) {
-            Image(
-                painter = painterResource(R.drawable.hauth_logo),
-                contentDescription = null,
-                modifier = Modifier.size(36.dp)
-            )
+        if (onBackHome != null) {
             Spacer(Modifier.size(12.dp))
-            Text(stringResource(R.string.go_measure), textAlign = TextAlign.Center)
+            OutlinedButton(onClick = onBackHome) {
+                Image(
+                    painter = painterResource(R.drawable.hauth_logo),
+                    contentDescription = null,
+                    modifier = Modifier.size(36.dp)
+                )
+                Spacer(Modifier.size(12.dp))
+                Text(stringResource(R.string.back_home), textAlign = TextAlign.Center)
+            }
         }
     }
 }

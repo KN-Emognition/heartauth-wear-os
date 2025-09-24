@@ -1,4 +1,4 @@
-package com.samsung.android.heartauth.ui.screens
+package knemognition.heartauth.mobile.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -20,9 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsung.android.heartauth.R
 
-
 @Composable
-fun ResultScreen(message: String, onBackHome: () -> Unit) {
+fun MainScreen(onMeasure: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -30,16 +29,21 @@ fun ResultScreen(message: String, onBackHome: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = message, fontSize = 14.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        Text(
+            text = stringResource(R.string.app_name),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
         Spacer(Modifier.size(12.dp))
-        OutlinedButton(onClick = onBackHome) {
+        OutlinedButton(onClick = onMeasure) {
             Image(
                 painter = painterResource(R.drawable.hauth_logo),
                 contentDescription = null,
                 modifier = Modifier.size(36.dp)
             )
             Spacer(Modifier.size(12.dp))
-            Text(stringResource(R.string.back_home),textAlign = TextAlign.Center)
+            Text(stringResource(R.string.go_measure), textAlign = TextAlign.Center)
         }
     }
 }

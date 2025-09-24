@@ -1,4 +1,4 @@
-package com.samsung.android.heartauth.ui.screens
+package knemognition.heartauth.mobile.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.samsung.android.heartauth.R
-import com.samsung.android.heartauth.ui.components.GradientCircularProgressIndicator
+import knemognition.heartauth.mobile.ui.components.GradientCircularProgressIndicator
 
 @Composable
 fun MeasurementScreen(progress: Float) {
@@ -25,7 +25,6 @@ fun MeasurementScreen(progress: Float) {
             contentDescription = null,
             modifier = Modifier.size(120.dp)
         )
-
         GradientCircularProgressIndicator(
             progress = progress , modifier = Modifier.size(120.dp)
         )

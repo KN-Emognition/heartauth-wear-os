@@ -1,7 +1,8 @@
-package com.samsung.android.heartauth.data
+package knemognition.heartauth.mobile.data
 
 sealed interface UiEvent {
     data class ShowToast(val messageRes: Int) : UiEvent
+    data class CloseAfterDelay(val ms: Long) : UiEvent
     data object KeepScreenOnEnable : UiEvent
     data object KeepScreenOnDisable : UiEvent
 }

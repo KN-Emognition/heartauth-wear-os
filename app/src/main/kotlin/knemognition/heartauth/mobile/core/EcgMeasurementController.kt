@@ -1,17 +1,17 @@
-package com.samsung.android.heartauth.core
+package knemognition.heartauth.mobile.core
 
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.MainThread
-import com.samsung.android.heartauth.Constants
-import com.samsung.android.heartauth.data.FinishReason
-import com.samsung.android.heartauth.utils.HealthServiceManager
 import com.samsung.android.service.health.tracking.HealthTracker
 import com.samsung.android.service.health.tracking.HealthTracker.TrackerEventListener
 import com.samsung.android.service.health.tracking.data.DataPoint
 import com.samsung.android.service.health.tracking.data.HealthTrackerType
 import com.samsung.android.service.health.tracking.data.ValueKey
+import knemognition.heartauth.mobile.Constants
+import knemognition.heartauth.mobile.data.FinishReason
+import knemognition.heartauth.mobile.utils.HealthServiceManager
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
 

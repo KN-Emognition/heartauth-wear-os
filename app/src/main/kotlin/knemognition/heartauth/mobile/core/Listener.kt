@@ -1,6 +1,7 @@
-package com.samsung.android.heartauth.core
+package knemognition.heartauth.mobile.core
 
-import com.samsung.android.heartauth.data.FinishReason
+import knemognition.heartauth.mobile.data.FinishReason
+
 
 interface Listener {
     fun onData()

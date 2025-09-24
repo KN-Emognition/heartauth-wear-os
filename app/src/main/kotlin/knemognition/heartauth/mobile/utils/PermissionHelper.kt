@@ -1,4 +1,4 @@
-package com.samsung.android.heartauth.utils
+package knemognition.heartauth.mobile.utils
 
 import android.Manifest
 import android.content.Context

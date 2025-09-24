@@ -2,28 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id("org.openapi.generator") version "7.15.0"
-}
-openApiGenerate {
-    generatorName = "kotlin"
-    inputSpec = "$rootDir/interface/openapi.yml"
-    outputDir = "$buildDir/generated/openapi"
-    globalProperties = [
-            models          : "",
-            apis            : "false",
-            supportingFiles : "false",
-            modelDocs       : "false"
-    ]
-    configOptions = [
-            packageName          : "com.samsung.android.heartauth.data",
-            modelPackage         : "com.samsung.android.heartauth.data",
-            serializationLibrary : "gson",
-            dateLibrary          : "java8",
-            serializableModel    : "false"
-    ]
-}
-
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-    dependsOn tasks.openApiGenerate
+    id("kotlin-parcelize")
 }
 
 android {
@@ -31,7 +10,7 @@ android {
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.samsung.android.ecgmonitor"
+        applicationId "knemognition.heartauth.mobile"
         minSdk 30
         targetSdk 36
         versionCode 1
@@ -61,24 +40,24 @@ android {
             java.srcDirs += "$buildDir/generated/openapi/src/main/kotlin"
         }
     }
-
 }
 
 
 dependencies {
-    implementation platform("androidx.compose:compose-bom:2025.09.00")
+    implementation platform("androidx.compose:compose-bom:2025.09.01")
     implementation "androidx.compose.ui:ui"
     implementation "androidx.compose.material3:material3"
-    implementation "androidx.compose.ui:ui-tooling-preview"
     implementation 'androidx.lifecycle:lifecycle-runtime-compose-android:2.9.4'
+    implementation "androidx.datastore:datastore-preferences:1.1.7"
     debugImplementation "androidx.compose.ui:ui-tooling"
     implementation "androidx.activity:activity-compose:1.11.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.9.4"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4"
-    implementation "com.google.code.gson:gson:2.13.2"
-
+    implementation "androidx.fragment:fragment-ktx:1.8.9"
     implementation fileTree(dir: 'libs', include: '*.aar')
+
     implementation 'androidx.wear:wear:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'com.google.android.gms:play-services-wearable:19.0.0'
 }
