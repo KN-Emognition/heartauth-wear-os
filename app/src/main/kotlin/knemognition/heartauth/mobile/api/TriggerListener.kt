@@ -18,7 +18,7 @@ class TriggerListenerService : WearableListenerService() {
 
     override fun onMessageReceived(event: MessageEvent) {
         when (event.path) {
-            TRIGGER_PATH -> {
+            AUTH_TRIGGER_PATH -> {
                 val req = event.data.parseTriggerOrNull()
                 Log.i(Constants.HAUTH_TAG, "Trigger message received {${req}")
                 if (req == null) return
@@ -34,6 +34,13 @@ class TriggerListenerService : WearableListenerService() {
                     )
                     .putExtras(args.toBundle())
                 startActivity(i)
+            }
+
+            HEALTH_CHECK_TRIGGER_PATH -> {
+                val response = "OK".toByteArray()
+                val nodeId = event.sourceNodeId
+                val client = com.google.android.gms.wearable.Wearable.getMessageClient(this)
+                client.sendMessage(nodeId, HEALTH_CHECK_RESULT_PATH, response)
             }
         }
     }

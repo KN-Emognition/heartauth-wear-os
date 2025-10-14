@@ -21,7 +21,7 @@ class EcgSenderImpl(
         val response = TriggerResponse(
             requestId, true, payload.data
         )
-        client.sendMessage(nodeId, RESULT_PATH, response.toJsonBytes())
+        client.sendMessage(nodeId, AUTH_RESULT_PATH, response.toJsonBytes())
         ioScope.launch {
             TriggerStore.clear(appContext)
         }

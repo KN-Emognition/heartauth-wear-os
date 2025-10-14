@@ -5,8 +5,11 @@ import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONObject
 
-const val TRIGGER_PATH = "/heartauth/v1/trigger"
-const val RESULT_PATH = "/heartauth/v1/result"
+const val AUTH_TRIGGER_PATH = "/heartauth/v1/auth/trigger"
+const val AUTH_RESULT_PATH = "/heartauth/v1/auth/result"
+const val HEALTH_CHECK_TRIGGER_PATH = "/heartauth/v1/health/trigger"
+const val HEALTH_CHECK_RESULT_PATH = "/heartauth/v1/health/result"
+
 
 const val TYPE_CHALLENGE = "challenge"
 const val TYPE_RESULT = "result"
