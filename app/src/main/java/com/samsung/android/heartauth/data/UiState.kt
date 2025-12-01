@@ -1,6 +1,6 @@
 package com.samsung.android.heartauth.data
 
-import knemognition.heartauth.mobile.data.ScreenState
+import com.knemognition.heartauth.data.ScreenState
 
 data class UiState(
     val screen: ScreenState = ScreenState.Menu,

@@ -17,7 +17,7 @@
             android:value="true" />
 
         <activity
-            android:name="knemognition.heartauth.mobile.MainActivity"
+            android:name="com.knemognition.heartauth.MainActivity"
             android:exported="true"
             android:taskAffinity="">
             <intent-filter>
@@ -26,14 +26,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="knemognition.heartauth.mobile.MeasurementActivity"
+            android:name="com.knemognition.heartauth.MeasurementActivity"
             android:excludeFromRecents="true"
             android:exported="false"
             android:launchMode="singleTask"
             android:noHistory="true" />
 
         <service
-            android:name="knemognition.heartauth.mobile.api.TriggerListenerService"
+            android:name="com.knemognition.heartauth.api.TriggerListenerService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
