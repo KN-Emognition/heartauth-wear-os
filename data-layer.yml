@@ -1,0 +1,114 @@
+openapi: 3.1.0
+info:
+  title: HeartAuth WearOS/Mobile Data Layer Contract
+  version: 1.0.0
+
+paths:
+  /heartauth/v1/auth/trigger:
+    post:
+      summary: ECG sample collection request (Android → WearOS)
+      description: >
+        Android → WearOS: Mobile app sends a TriggerRequest instructing the watch
+        to start ECG measurement.
+      operationId: sendAuthTrigger
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TriggerRequest"
+    
+  
+  /heartauth/v1/auth/result:
+    post:
+      summary: ECG sample collection response (WearOS → Android)
+      description: >
+        WearOS → Android: Watch sends a TriggerResponse containing ECG data
+        after completing the measurement.
+      operationId: receiveAuthResult
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TriggerResponse"
+
+  /heartauth/v1/health/trigger:
+    post:
+      summary: Health-check request (Android → WearOS)
+      description: >
+        A minimal connectivity ping. The payload is a plain UTF-8 text message,
+        typically "Health check".
+      tags: [HealthCheck]
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: Plaintext probe message.
+              example: "Health check"
+
+  /heartauth/v1/health/result:
+    post:
+      summary: Health-check response (WearOS → Android)
+      description: >
+        A minimal plaintext response. The watch replies "OK" (case-insensitive),
+        confirming availability and correct operation.
+      tags: [HealthCheck]
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: Plaintext response string.
+              example: "OK"
+
+components:
+  schemas:
+
+    TriggerRequest:
+      type: object
+      required:
+        - id
+        - expiresAt
+        - measurementDurationMs
+      properties:
+        id:
+          type: string
+          description: Correlation ID of the authentication session.
+        expiresAt:
+          type: integer
+          description: Unix timestamp in milliseconds.
+        measurementDurationMs:
+          type: integer
+          description: Duration of ECG measurement in milliseconds.
+      example:
+        id: "session-123"
+        expiresAt: 1734567890000
+        measurementDurationMs: 8000
+
+    TriggerResponse:
+      type: object
+      required:
+        - id
+        - ok
+      properties:
+        id:
+          type: string
+          description: Correlation ID corresponding to a TriggerRequest.
+        ok:
+          type: boolean
+          description: Indicates if the ECG measurement succeeded.
+        data:
+          type: array
+          items:
+            type: number
+            format: double
+          description: ECG waveform samples (only present when ok = true).
+      example:
+        id: "session-123"
+        ok: true
+        data: [0.12, 0.15, 0.09]
+
